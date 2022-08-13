@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "386260746772",
+    "firebase_url": "https://mysmartbedroom-default-rtdb.firebaseio.com",
+    "project_id": "mysmartbedroom",
+    "storage_bucket": "mysmartbedroom.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:386260746772:android:e8b9a9eb63d8cff3aa5d01",
+        "android_client_info": {
+          "package_name": "com.example.mysmartbedroom"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "386260746772-uls32c3sevmc1sbuj19tcgpdah6n5lqg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6ihJbAp_gXmu9SA1iM--AqkcMOBvkNMg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "386260746772-uls32c3sevmc1sbuj19tcgpdah6n5lqg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
