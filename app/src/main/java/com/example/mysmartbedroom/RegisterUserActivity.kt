@@ -55,7 +55,6 @@ class RegisterUserActivity : AppCompatActivity() {
                         }else{
                             Toast.makeText(baseContext, "User exists.."+it.exception,
                                 Toast.LENGTH_SHORT).show()
-                            println(email)
                         }
                     }
             }
