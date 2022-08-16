@@ -1,10 +1,16 @@
 package com.example.mysmartbedroom
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import androidx.navigation.fragment.findNavController
+import com.example.mysmartbedroom.classes.Bedroom
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -20,6 +26,7 @@ class DashboardFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,12 +36,28 @@ class DashboardFragment : Fragment() {
         }
     }
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_dashboard, container, false)
+        val view = inflater.inflate(R.layout.fragment_dashboard, container, false)
+        auth = FirebaseAuth.getInstance()
+        var bedroom = Bedroom("",0.0,"")
+        val ref = FirebaseDatabase.getInstance().getReference(auth.currentUser?.uid.toString())
+        ref.addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(dataSnapshot : DataSnapshot) {
+                bedroom = dataSnapshot.getValue(Bedroom::class.java)!!
+                val tempView = view.findViewById<TextView>(R.id.temperatureView)
+                tempView.text = bedroom.Temperature.toString()
+            }
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.w("TAG", "loadPost:onCancelled", databaseError.toException())
+            }
+
+        })
+        return view
+
     }
 
     companion object {

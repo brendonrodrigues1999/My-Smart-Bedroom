@@ -40,7 +40,7 @@ class RegisterUserActivity : AppCompatActivity() {
                             doc.set(user as Map<String, Any>).addOnCompleteListener(this) { task ->
                                 if (task.isSuccessful) {
                                     val ref = FirebaseDatabase.getInstance().getReference(userId)
-                                    ref.child("Main Lights").setValue("off")
+                                    ref.child("Lights").setValue("off")
                                     ref.child("Curtains").setValue("close")
                                     ref.child("Temperature").setValue(0)
                                     Toast.makeText(this,"User Added!", Toast.LENGTH_SHORT).show()
