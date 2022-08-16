@@ -1,13 +1,16 @@
 package com.example.mysmartbedroom
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.GridView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.example.mysmartbedroom.classes.Bedroom
 import com.example.mysmartbedroom.classes.GridViewModal
@@ -48,6 +51,7 @@ class DashboardFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_dashboard, container, false)
         val tempView = view.findViewById<TextView>(R.id.temperatureView)
         auth = FirebaseAuth.getInstance()
+        val ref = FirebaseDatabase.getInstance().getReference(auth.currentUser?.uid.toString())
         var bedroom = Bedroom("",0.0,"")
         iotGRV = view.findViewById(R.id.gridView)
         iotList = ArrayList<GridViewModal>()
@@ -57,10 +61,33 @@ class DashboardFragment : Fragment() {
         iotList = iotList + GridViewModal("Temperature",R.drawable.logo)
         iotList = iotList + GridViewModal("Alarm",R.drawable.logo)
         iotList = iotList + GridViewModal("Door Locks",R.drawable.logo)
+
         val iotAdapter = context?.let { GridAdapter(iotList = iotList, it.applicationContext) }
         iotGRV.adapter = iotAdapter
+        iotGRV.onItemClickListener = AdapterView.OnItemClickListener{_,_,position,_ ->
+            when (iotList[position].iotName){
+                "Lights" ->
+                    if(bedroom.Lights == "on"){
+                        ref.child("Lights").setValue("off")
+                    }else{
+                        ref.child("Lights").setValue("on")
+                    }
+                "Curtains" ->
+                    startActivity(Intent(context?.applicationContext, ProfileFragment::class.java))
+                "Music" ->
+                    startActivity(Intent(context?.applicationContext, ProfileFragment::class.java))
+                "Temperature" ->
+                    startActivity(Intent(context?.applicationContext, ProfileFragment::class.java))
+                "Alarm" ->
+                    startActivity(Intent(context?.applicationContext, ProfileFragment::class.java))
+                "Door Locks" ->
+                    startActivity(Intent(context?.applicationContext, ProfileFragment::class.java))
+                else -> ""
 
-        val ref = FirebaseDatabase.getInstance().getReference(auth.currentUser?.uid.toString())
+            }
+        }
+
+
         ref.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(dataSnapshot : DataSnapshot) {
                 bedroom = dataSnapshot.getValue(Bedroom::class.java)!!
@@ -73,7 +100,6 @@ class DashboardFragment : Fragment() {
 
         })
         return view
-
     }
 
     companion object {
