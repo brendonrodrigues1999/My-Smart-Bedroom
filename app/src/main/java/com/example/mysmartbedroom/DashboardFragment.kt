@@ -6,9 +6,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.GridView
 import android.widget.TextView
 import androidx.navigation.fragment.findNavController
 import com.example.mysmartbedroom.classes.Bedroom
+import com.example.mysmartbedroom.classes.GridViewModal
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
@@ -27,6 +29,8 @@ class DashboardFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
     private lateinit var auth: FirebaseAuth
+    lateinit var iotGRV: GridView
+    lateinit var iotList: List<GridViewModal>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,13 +46,25 @@ class DashboardFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_dashboard, container, false)
+        val tempView = view.findViewById<TextView>(R.id.temperatureView)
         auth = FirebaseAuth.getInstance()
         var bedroom = Bedroom("",0.0,"")
+        iotGRV = view.findViewById(R.id.gridView)
+        iotList = ArrayList<GridViewModal>()
+        iotList = iotList + GridViewModal("Lights",R.drawable.logo)
+        iotList = iotList + GridViewModal("Curtains",R.drawable.logo)
+        iotList = iotList + GridViewModal("Music",R.drawable.logo)
+        iotList = iotList + GridViewModal("Temperature",R.drawable.logo)
+        iotList = iotList + GridViewModal("Alarm",R.drawable.logo)
+        iotList = iotList + GridViewModal("Door Locks",R.drawable.logo)
+        val iotAdapter = context?.let { GridAdapter(iotList = iotList, it.applicationContext) }
+        iotGRV.adapter = iotAdapter
+
         val ref = FirebaseDatabase.getInstance().getReference(auth.currentUser?.uid.toString())
         ref.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(dataSnapshot : DataSnapshot) {
                 bedroom = dataSnapshot.getValue(Bedroom::class.java)!!
-                val tempView = view.findViewById<TextView>(R.id.temperatureView)
+
                 tempView.text = bedroom.Temperature.toString()
             }
             override fun onCancelled(databaseError: DatabaseError) {

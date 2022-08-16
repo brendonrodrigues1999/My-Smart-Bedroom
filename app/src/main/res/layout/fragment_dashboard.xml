@@ -11,29 +11,61 @@
         android:id="@+id/temperatureView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
+        android:layout_marginStart="43dp"
         android:layout_marginTop="37dp"
+        android:layout_marginBottom="144dp"
+        android:text="-"
         android:textSize="60sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        />
 
     <TextView
         android:id="@+id/textView12"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="79dp"
         android:text="ºC"
-        android:textSize="20sp"
-        app:layout_constraintStart_toEndOf="@+id/temperatureView"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:textSize="34sp"
+        app:layout_constraintBottom_toTopOf="@+id/tempDescriptionView"
+        app:layout_constraintStart_toEndOf="@+id/temperatureView" />
 
     <TextView
         android:id="@+id/tempDescriptionView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Current room temperature"
+        android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@+id/temperatureView"
         app:layout_constraintStart_toStartOf="@+id/temperatureView"
         app:layout_constraintTop_toBottomOf="@+id/temperatureView" />
+
+    <Button
+        android:id="@+id/nightModeBtn"
+        android:layout_width="325dp"
+        android:layout_height="68dp"
+        android:layout_marginStart="41dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="41dp"
+        android:text="Turn On Night Mode"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tempDescriptionView" />
+
+    <GridView
+        android:id="@+id/gridView"
+        android:layout_width="317dp"
+        android:layout_height="408dp"
+        android:layout_marginStart="41dp"
+        android:layout_marginEnd="41dp"
+        android:layout_marginBottom="46dp"
+        android:horizontalSpacing="6dp"
+        android:numColumns="2"
+        android:verticalSpacing="6dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/nightModeBtn"
+        app:layout_constraintVertical_bias="0.951" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
