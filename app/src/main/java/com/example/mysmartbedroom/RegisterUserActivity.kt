@@ -43,6 +43,8 @@ class RegisterUserActivity : AppCompatActivity() {
                                     ref.child("Lights").setValue("off")
                                     ref.child("Curtains").setValue("close")
                                     ref.child("Temperature").setValue(0)
+                                    ref.child("Music").setValue("off")
+                                    ref.child("Door_Locks").setValue("locked")
                                     Toast.makeText(this,"User Added!", Toast.LENGTH_SHORT).show()
                                     startActivity(Intent(applicationContext, MainActivity::class.java))
                                     finish()

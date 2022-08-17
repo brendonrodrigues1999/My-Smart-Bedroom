@@ -52,7 +52,7 @@ class DashboardFragment : Fragment() {
         val tempView = view.findViewById<TextView>(R.id.temperatureView)
         auth = FirebaseAuth.getInstance()
         val ref = FirebaseDatabase.getInstance().getReference(auth.currentUser?.uid.toString())
-        var bedroom = Bedroom("",0.0,"")
+        var bedroom = Bedroom("","",0.0,"","")
         iotGRV = view.findViewById(R.id.gridView)
         iotList = ArrayList<GridViewModal>()
         iotList = iotList + GridViewModal("Lights",R.drawable.logo)
@@ -60,7 +60,7 @@ class DashboardFragment : Fragment() {
         iotList = iotList + GridViewModal("Music",R.drawable.logo)
         iotList = iotList + GridViewModal("Temperature",R.drawable.logo)
         iotList = iotList + GridViewModal("Alarm",R.drawable.logo)
-        iotList = iotList + GridViewModal("Door Locks",R.drawable.logo)
+        iotList = iotList + GridViewModal("Door_Locks",R.drawable.logo)
 
         val iotAdapter = context?.let { GridAdapter(iotList = iotList, it.applicationContext) }
         iotGRV.adapter = iotAdapter
@@ -73,23 +73,34 @@ class DashboardFragment : Fragment() {
                         ref.child("Lights").setValue("on")
                     }
                 "Curtains" ->
-                    startActivity(Intent(context?.applicationContext, ProfileFragment::class.java))
+                    if(bedroom.Curtains == "open"){
+                        ref.child("Curtains").setValue("close")
+                    }else{
+                        ref.child("Curtains").setValue("open")
+                    }
                 "Music" ->
-                    startActivity(Intent(context?.applicationContext, ProfileFragment::class.java))
+                    if(bedroom.Music == "on"){
+                        ref.child("Music").setValue("off")
+                    }else{
+                        ref.child("Music").setValue("on")
+                    }
                 "Temperature" ->
                     startActivity(Intent(context?.applicationContext, ProfileFragment::class.java))
                 "Alarm" ->
                     startActivity(Intent(context?.applicationContext, ProfileFragment::class.java))
-                "Door Locks" ->
-                    startActivity(Intent(context?.applicationContext, ProfileFragment::class.java))
-                else -> ""
-
+                "Door_Locks" ->
+                    if(bedroom.Door_Locks == "locked"){
+                        ref.child("Door_Locks").setValue("unlocked")
+                    }else{
+                        ref.child("Door_Locks").setValue("locked")
+                    }
             }
         }
 
 
         ref.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(dataSnapshot : DataSnapshot) {
+                Log.w("TAG", dataSnapshot.toString())
                 bedroom = dataSnapshot.getValue(Bedroom::class.java)!!
 
                 tempView.text = bedroom.Temperature.toString()
