@@ -7,11 +7,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.GridView
-import android.widget.TextView
-import android.widget.Toast
-import androidx.navigation.fragment.findNavController
+import android.widget.*
+import androidx.core.view.get
 import com.example.mysmartbedroom.classes.Bedroom
 import com.example.mysmartbedroom.classes.GridViewModal
 import com.google.firebase.auth.FirebaseAuth
@@ -52,15 +49,15 @@ class DashboardFragment : Fragment() {
         val tempView = view.findViewById<TextView>(R.id.temperatureView)
         auth = FirebaseAuth.getInstance()
         val ref = FirebaseDatabase.getInstance().getReference(auth.currentUser?.uid.toString())
-        var bedroom = Bedroom("","",0.0,"","")
+        var bedroom = Bedroom("","",0.0,"","","","")
         iotGRV = view.findViewById(R.id.gridView)
         iotList = ArrayList<GridViewModal>()
-        iotList = iotList + GridViewModal("Lights",R.drawable.logo)
-        iotList = iotList + GridViewModal("Curtains",R.drawable.logo)
-        iotList = iotList + GridViewModal("Music",R.drawable.logo)
-        iotList = iotList + GridViewModal("Temperature",R.drawable.logo)
-        iotList = iotList + GridViewModal("Alarm",R.drawable.logo)
-        iotList = iotList + GridViewModal("Door_Locks",R.drawable.logo)
+        iotList = iotList + GridViewModal("Lights",R.drawable.lights_on)
+        iotList = iotList + GridViewModal("Curtains",R.drawable.closed_curtains)
+        iotList = iotList + GridViewModal("Music",R.drawable.music_on)
+        iotList = iotList + GridViewModal("Set Temperature",R.drawable.no_temp)
+        iotList = iotList + GridViewModal("Alarm",R.drawable.alarm)
+        iotList = iotList + GridViewModal("Door Locks",R.drawable.locked)
 
         val iotAdapter = context?.let { GridAdapter(iotList = iotList, it.applicationContext) }
         iotGRV.adapter = iotAdapter
@@ -84,11 +81,11 @@ class DashboardFragment : Fragment() {
                     }else{
                         ref.child("Music").setValue("on")
                     }
-                "Temperature" ->
+                "Set Temperature" ->
                     startActivity(Intent(context?.applicationContext, ProfileFragment::class.java))
                 "Alarm" ->
                     startActivity(Intent(context?.applicationContext, ProfileFragment::class.java))
-                "Door_Locks" ->
+                "Door Locks" ->
                     if(bedroom.Door_Locks == "locked"){
                         ref.child("Door_Locks").setValue("unlocked")
                     }else{
@@ -102,8 +99,34 @@ class DashboardFragment : Fragment() {
             override fun onDataChange(dataSnapshot : DataSnapshot) {
                 Log.w("TAG", dataSnapshot.toString())
                 bedroom = dataSnapshot.getValue(Bedroom::class.java)!!
-
                 tempView.text = bedroom.Temperature.toString()
+                if(bedroom.Lights=="on"){
+                    iotGRV.get(0).findViewById<ImageView>(R.id.iotIcon).setImageResource(R.drawable.lights_on)
+                }else if(bedroom.Lights=="off"){
+                    iotGRV.get(0).findViewById<ImageView>(R.id.iotIcon).setImageResource(R.drawable.lights_off)
+                }
+                if(bedroom.Curtains=="open"){
+                    iotGRV.get(1).findViewById<ImageView>(R.id.iotIcon).setImageResource(R.drawable.open_curtains)
+                }else if(bedroom.Curtains=="close"){
+                    iotGRV.get(1).findViewById<ImageView>(R.id.iotIcon).setImageResource(R.drawable.closed_curtains)
+                }
+                if(bedroom.Music=="on"){
+                    iotGRV.get(2).findViewById<ImageView>(R.id.iotIcon).setImageResource(R.drawable.music_on)
+                }else if(bedroom.Music=="off"){
+                    iotGRV.get(2).findViewById<ImageView>(R.id.iotIcon).setImageResource(R.drawable.music_off)
+                }
+                if(bedroom.Door_Locks=="locked"){
+                    iotGRV.get(5).findViewById<ImageView>(R.id.iotIcon).setImageResource(R.drawable.locked)
+                }else if(bedroom.Door_Locks=="unlocked"){
+                    iotGRV.get(5).findViewById<ImageView>(R.id.iotIcon).setImageResource(R.drawable.unlocked)
+                }
+                if(bedroom.Heater!="off"){
+                    iotGRV.get(3).findViewById<ImageView>(R.id.iotIcon).setImageResource(R.drawable.heater)
+                }else if(bedroom.AC!="off"){
+                    iotGRV.get(3).findViewById<ImageView>(R.id.iotIcon).setImageResource(R.drawable.air_conditioner)
+                }else{
+                    iotGRV.get(3).findViewById<ImageView>(R.id.iotIcon).setImageResource(R.drawable.no_temp)
+                }
             }
             override fun onCancelled(databaseError: DatabaseError) {
                 Log.w("TAG", "loadPost:onCancelled", databaseError.toException())
