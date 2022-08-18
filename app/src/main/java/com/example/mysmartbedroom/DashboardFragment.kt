@@ -103,6 +103,49 @@ class DashboardFragment : Fragment() {
             }
         }
 
+        iotGRV.onItemLongClickListener =
+            AdapterView.OnItemLongClickListener {_,_,position,_ ->
+                val lightsFreg = LightsControlFragment.newInstance("param1","param2")
+                val curtainsFreg = CurtainsControlFragment.newInstance("param1","param2")
+                val musicFreg = MusicControlFragment.newInstance("param1","param2")
+                val tempFrag = TemperatureControlFragment.newInstance("param1","param2")
+                val alarmFreg = AlarmSettingFragment.newInstance("param1","param2")
+                val doorFreg = DoorLocksControlFragment.newInstance("param1","param2")
+                when (iotList[position].iotName) {
+                    "Lights" -> {
+                        view.findViewById<ConstraintLayout>(R.id.menuHome).removeAllViews()
+                        activity?.supportFragmentManager?.beginTransaction()
+                            ?.add(R.id.menuHome, lightsFreg)?.disallowAddToBackStack()?.commit()
+                    }
+                    "Curtains" -> {
+                        view.findViewById<ConstraintLayout>(R.id.menuHome).removeAllViews()
+                        activity?.supportFragmentManager?.beginTransaction()
+                            ?.add(R.id.menuHome, curtainsFreg)?.disallowAddToBackStack()?.commit()
+                    }
+                    "Music" -> {
+                        view.findViewById<ConstraintLayout>(R.id.menuHome).removeAllViews()
+                        activity?.supportFragmentManager?.beginTransaction()
+                            ?.add(R.id.menuHome, musicFreg)?.disallowAddToBackStack()?.commit()
+                    }
+                    "Set Temperature" -> {
+                        view.findViewById<ConstraintLayout>(R.id.menuHome).removeAllViews()
+                        activity?.supportFragmentManager?.beginTransaction()
+                            ?.add(R.id.menuHome, tempFrag)?.disallowAddToBackStack()?.commit()
+                    }
+                    "Alarm" -> {
+                        view.findViewById<ConstraintLayout>(R.id.menuHome).removeAllViews()
+                        activity?.supportFragmentManager?.beginTransaction()
+                            ?.add(R.id.menuHome, alarmFreg)?.disallowAddToBackStack()?.commit()
+                    }
+                    "Door Locks" ->{
+                        view.findViewById<ConstraintLayout>(R.id.menuHome).removeAllViews()
+                        activity?.supportFragmentManager?.beginTransaction()
+                            ?.add(R.id.menuHome, doorFreg)?.disallowAddToBackStack()?.commit()
+                    }
+                }
+                true
+            }
+
 
         ref.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(dataSnapshot : DataSnapshot) {

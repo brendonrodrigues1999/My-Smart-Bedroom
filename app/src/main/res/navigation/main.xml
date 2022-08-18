@@ -30,4 +30,24 @@
         android:name="com.example.mysmartbedroom.AlarmSettingFragment"
         android:label="fragment_alarm_setting"
         tools:layout="@layout/fragment_alarm_setting" />
+    <fragment
+        android:id="@+id/menuCurtains"
+        android:name="com.example.mysmartbedroom.CurtainsControlFragment"
+        android:label="fragment_curtains_control"
+        tools:layout="@layout/fragment_curtains_control" />
+    <fragment
+        android:id="@+id/menuDoor"
+        android:name="com.example.mysmartbedroom.DoorLocksControlFragment"
+        android:label="fragment_door_locks_control"
+        tools:layout="@layout/fragment_door_locks_control" />
+    <fragment
+        android:id="@+id/menuLights"
+        android:name="com.example.mysmartbedroom.LightsControlFragment"
+        android:label="fragment_lights_control"
+        tools:layout="@layout/fragment_lights_control" />
+    <fragment
+        android:id="@+id/menuMusic"
+        android:name="com.example.mysmartbedroom.MusicControlFragment"
+        android:label="fragment_music_control"
+        tools:layout="@layout/fragment_music_control" />
 </navigation>
