@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.get
 import com.example.mysmartbedroom.classes.Bedroom
 import com.example.mysmartbedroom.classes.GridViewModal
@@ -52,16 +53,18 @@ class DashboardFragment : Fragment() {
         var bedroom = Bedroom("","",0.0,"","","","")
         iotGRV = view.findViewById(R.id.gridView)
         iotList = ArrayList<GridViewModal>()
-        iotList = iotList + GridViewModal("Lights",R.drawable.lights_on)
+        iotList = iotList + GridViewModal("Lights",R.drawable.light_off)
         iotList = iotList + GridViewModal("Curtains",R.drawable.closed_curtains)
         iotList = iotList + GridViewModal("Music",R.drawable.music_on)
         iotList = iotList + GridViewModal("Set Temperature",R.drawable.no_temp)
         iotList = iotList + GridViewModal("Alarm",R.drawable.alarm)
-        iotList = iotList + GridViewModal("Door Locks",R.drawable.locked)
+        iotList = iotList + GridViewModal("Door Locks",R.drawable.door_unlocked)
 
         val iotAdapter = context?.let { GridAdapter(iotList = iotList, it.applicationContext) }
         iotGRV.adapter = iotAdapter
         iotGRV.onItemClickListener = AdapterView.OnItemClickListener{_,_,position,_ ->
+            val tempFrag = TemperatureControlFragment.newInstance("param","param")
+            val alarmFreg = AlarmSettingFragment.newInstance("param1","param2")
             when (iotList[position].iotName){
                 "Lights" ->
                     if(bedroom.Lights == "on"){
@@ -81,10 +84,16 @@ class DashboardFragment : Fragment() {
                     }else{
                         ref.child("Music").setValue("on")
                     }
-                "Set Temperature" ->
-                    startActivity(Intent(context?.applicationContext, ProfileFragment::class.java))
-                "Alarm" ->
-                    startActivity(Intent(context?.applicationContext, ProfileFragment::class.java))
+                "Set Temperature" -> {
+                    view.findViewById<ConstraintLayout>(R.id.menuHome).removeAllViews()
+                    activity?.supportFragmentManager?.beginTransaction()
+                        ?.add(R.id.menuHome, tempFrag)?.disallowAddToBackStack()?.commit()
+                }
+                "Alarm" -> {
+                    view.findViewById<ConstraintLayout>(R.id.menuHome).removeAllViews()
+                    activity?.supportFragmentManager?.beginTransaction()
+                        ?.add(R.id.menuHome, alarmFreg)?.disallowAddToBackStack()?.commit()
+                }
                 "Door Locks" ->
                     if(bedroom.Door_Locks == "locked"){
                         ref.child("Door_Locks").setValue("unlocked")
@@ -103,7 +112,7 @@ class DashboardFragment : Fragment() {
                 if(bedroom.Lights=="on"){
                     iotGRV.get(0).findViewById<ImageView>(R.id.iotIcon).setImageResource(R.drawable.lights_on)
                 }else if(bedroom.Lights=="off"){
-                    iotGRV.get(0).findViewById<ImageView>(R.id.iotIcon).setImageResource(R.drawable.lights_off)
+                    iotGRV.get(0).findViewById<ImageView>(R.id.iotIcon).setImageResource(R.drawable.light_off)
                 }
                 if(bedroom.Curtains=="open"){
                     iotGRV.get(1).findViewById<ImageView>(R.id.iotIcon).setImageResource(R.drawable.open_curtains)
@@ -116,9 +125,9 @@ class DashboardFragment : Fragment() {
                     iotGRV.get(2).findViewById<ImageView>(R.id.iotIcon).setImageResource(R.drawable.music_off)
                 }
                 if(bedroom.Door_Locks=="locked"){
-                    iotGRV.get(5).findViewById<ImageView>(R.id.iotIcon).setImageResource(R.drawable.locked)
+                    iotGRV.get(5).findViewById<ImageView>(R.id.iotIcon).setImageResource(R.drawable.door_locked)
                 }else if(bedroom.Door_Locks=="unlocked"){
-                    iotGRV.get(5).findViewById<ImageView>(R.id.iotIcon).setImageResource(R.drawable.unlocked)
+                    iotGRV.get(5).findViewById<ImageView>(R.id.iotIcon).setImageResource(R.drawable.door_unlocked)
                 }
                 if(bedroom.Heater!="off"){
                     iotGRV.get(3).findViewById<ImageView>(R.id.iotIcon).setImageResource(R.drawable.heater)
