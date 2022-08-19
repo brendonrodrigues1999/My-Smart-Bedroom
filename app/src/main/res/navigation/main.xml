@@ -28,7 +28,7 @@
     <fragment
         android:id="@+id/menuAlarm"
         android:name="com.example.mysmartbedroom.AlarmSettingFragment"
-        android:label="fragment_alarm_setting"
+        android:label="Alarm Settings"
         tools:layout="@layout/fragment_alarm_setting" />
     <fragment
         android:id="@+id/menuCurtains"
@@ -50,4 +50,9 @@
         android:name="com.example.mysmartbedroom.MusicControlFragment"
         android:label="fragment_music_control"
         tools:layout="@layout/fragment_music_control" />
+    <fragment
+        android:id="@+id/nightModeMenu"
+        android:name="com.example.mysmartbedroom.NightModeSettingsFragment"
+        android:label="fragment_night_mode_settings"
+        tools:layout="@layout/fragment_night_mode_settings" />
 </navigation>

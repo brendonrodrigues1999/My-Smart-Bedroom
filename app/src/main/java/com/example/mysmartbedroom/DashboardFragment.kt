@@ -48,6 +48,7 @@ class DashboardFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_dashboard, container, false)
         val tempView = view.findViewById<TextView>(R.id.temperatureView)
+        val nightModeBtn = view.findViewById<Button>(R.id.nightModeBtn)
         auth = FirebaseAuth.getInstance()
         val ref = FirebaseDatabase.getInstance().getReference(auth.currentUser?.uid.toString())
         var bedroom = Bedroom("","",0.0,"","","","")
@@ -185,6 +186,24 @@ class DashboardFragment : Fragment() {
             }
 
         })
+
+        nightModeBtn.setOnClickListener{
+            val text = nightModeBtn.text.toString()
+            if(text == "TURN ON NIGHT MODE"){
+                nightModeBtn.text = "TURN OFF NIGHT MODE"
+            }else{
+                nightModeBtn.text = "TURN ON NIGHT MODE"
+            }
+        }
+
+        nightModeBtn.setOnLongClickListener{
+            val nightmodeFrag = NightModeSettingsFragment.newInstance("param1","param2")
+            view.findViewById<ConstraintLayout>(R.id.menuHome).removeAllViews()
+            activity?.supportFragmentManager?.beginTransaction()
+                ?.add(R.id.menuHome, nightmodeFrag)?.disallowAddToBackStack()?.commit()
+            true
+        }
+
         return view
     }
 

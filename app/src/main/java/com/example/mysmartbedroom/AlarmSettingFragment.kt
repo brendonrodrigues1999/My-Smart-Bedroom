@@ -1,10 +1,22 @@
 package com.example.mysmartbedroom
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Context.ALARM_SERVICE
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.TimePicker
+import android.widget.Toast
+import androidx.core.content.ContextCompat.getSystemService
+import com.example.mysmartbedroom.classes.MyAlarm
+import java.util.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -33,8 +45,47 @@ class AlarmSettingFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_alarm_setting, container, false)
+        val view = inflater.inflate(R.layout.fragment_alarm_setting, container, false)
+        val calender: Calendar = Calendar.getInstance()
+        val timePicker = view.findViewById<TimePicker>(R.id.timePicker)
+        val btnSetAlarm = view.findViewById<Button>(R.id.setAlarmBtn)
+        btnSetAlarm.setOnClickListener{
+            val calender: Calendar = Calendar.getInstance()
+            if(Build.VERSION.SDK_INT >= 23){
+                calender.set(
+                    calender.get(Calendar.YEAR),
+                    calender.get(Calendar.MONTH),
+                    calender.get(Calendar.DAY_OF_MONTH),
+                    timePicker.hour,
+                    timePicker.minute,
+                    0
+                )
+            }else {
+                calender.set(
+                    calender.get(Calendar.YEAR),
+                    calender.get(Calendar.MONTH),
+                    calender.get(Calendar.DAY_OF_MONTH),
+                    timePicker.currentHour,
+                    timePicker.currentMinute,
+                    0
+                )
+            }
+            setAlarm(calender.timeInMillis)
+        }
+        return view
+    }
+
+    private fun setAlarm(timeInMillis: Long) {
+        val wakeup_alarm = activity?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(activity,MyAlarm::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(activity,0,intent,0)
+        wakeup_alarm.setRepeating(
+            AlarmManager.RTC_WAKEUP,
+            timeInMillis,
+            AlarmManager.INTERVAL_DAY,
+            pendingIntent
+        )
+        Toast.makeText(activity,"Alarm is Set",Toast.LENGTH_LONG).show()
     }
 
     companion object {
