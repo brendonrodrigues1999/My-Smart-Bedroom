@@ -16,6 +16,7 @@ import android.widget.TimePicker
 import android.widget.Toast
 import androidx.core.content.ContextCompat.getSystemService
 import com.example.mysmartbedroom.classes.MyAlarm
+import com.example.mysmartbedroom.classes.OpenCurtains
 import java.util.*
 
 // TODO: Rename parameter arguments, choose names that match
@@ -49,6 +50,7 @@ class AlarmSettingFragment : Fragment() {
         val calender: Calendar = Calendar.getInstance()
         val timePicker = view.findViewById<TimePicker>(R.id.timePicker)
         val btnSetAlarm = view.findViewById<Button>(R.id.setAlarmBtn)
+        val openCurtainsTime = 600000
         btnSetAlarm.setOnClickListener{
             val calender: Calendar = Calendar.getInstance()
             if(Build.VERSION.SDK_INT >= 23){
@@ -70,15 +72,27 @@ class AlarmSettingFragment : Fragment() {
                     0
                 )
             }
+            setOpenCurtainsAlarm(calender.timeInMillis-openCurtainsTime)
             setAlarm(calender.timeInMillis)
         }
         return view
     }
 
+    private fun setOpenCurtainsAlarm(time: Long) {
+        val openCurtains = activity?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(activity,OpenCurtains::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(activity,0,intent,0)
+        openCurtains.set(
+            AlarmManager.RTC_WAKEUP,
+            time,
+            pendingIntent
+        )
+    }
+
     private fun setAlarm(timeInMillis: Long) {
         val wakeup_alarm = activity?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(activity,MyAlarm::class.java)
-        val pendingIntent = PendingIntent.getBroadcast(activity,1,intent,PendingIntent.FLAG_UPDATE_CURRENT)
+        val pendingIntent = PendingIntent.getBroadcast(activity,1,intent,0)
         wakeup_alarm.setRepeating(
             AlarmManager.RTC_WAKEUP,
             timeInMillis,

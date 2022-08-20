@@ -51,6 +51,7 @@
             android:theme="@style/AppTheme" />
 
         <receiver android:name=".classes.MyAlarm" />
+        <receiver android:name=".classes.OpenCurtains" />
     </application>
 
 </manifest>

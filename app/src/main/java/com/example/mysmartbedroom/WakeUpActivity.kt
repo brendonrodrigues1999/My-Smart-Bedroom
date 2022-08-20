@@ -31,6 +31,7 @@ class WakeUpActivity : AppCompatActivity() {
         val stopAlarmBtn = findViewById<Button>(R.id.stopAlarmBtn)
         stopAlarmBtn.setOnClickListener{
             MyAlarm.MediaPlayerService.stop()
+            finish()
         }
     }
 }
