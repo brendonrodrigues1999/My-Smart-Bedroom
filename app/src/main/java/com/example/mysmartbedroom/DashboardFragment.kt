@@ -51,7 +51,7 @@ class DashboardFragment : Fragment() {
         val nightModeBtn = view.findViewById<Button>(R.id.nightModeBtn)
         auth = FirebaseAuth.getInstance()
         val ref = FirebaseDatabase.getInstance().getReference(auth.currentUser?.uid.toString())
-        var bedroom = Bedroom("","",0.0,"","","","")
+        var bedroom = Bedroom("","","",0.0,"","","","")
         iotGRV = view.findViewById(R.id.gridView)
         iotList = ArrayList<GridViewModal>()
         iotList = iotList + GridViewModal("Lights",R.drawable.light_off)
@@ -180,6 +180,11 @@ class DashboardFragment : Fragment() {
                 }else{
                     iotGRV.get(3).findViewById<ImageView>(R.id.iotIcon).setImageResource(R.drawable.no_temp)
                 }
+                if(bedroom.Night_Mode =="on"){
+                    nightModeBtn.text = "TURN OFF NIGHT MODE"
+                }else if(bedroom.Night_Mode =="off"){
+                    nightModeBtn.text = "TURN ON NIGHT MODE"
+                }
             }
             override fun onCancelled(databaseError: DatabaseError) {
                 Log.w("TAG", "loadPost:onCancelled", databaseError.toException())
@@ -188,11 +193,10 @@ class DashboardFragment : Fragment() {
         })
 
         nightModeBtn.setOnClickListener{
-            val text = nightModeBtn.text.toString()
-            if(text == "TURN ON NIGHT MODE"){
-                nightModeBtn.text = "TURN OFF NIGHT MODE"
-            }else{
-                nightModeBtn.text = "TURN ON NIGHT MODE"
+            if(bedroom.Night_Mode =="on"){
+                ref.child("Night_Mode").setValue("off")
+            }else if(bedroom.Night_Mode =="off"){
+                ref.child("Night_Mode").setValue("on")
             }
         }
 
