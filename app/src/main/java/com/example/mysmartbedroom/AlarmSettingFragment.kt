@@ -89,7 +89,7 @@ class AlarmSettingFragment : Fragment() {
         )
     }
 
-    private fun setAlarm(timeInMillis: Long) {
+    fun setAlarm(timeInMillis: Long) {
         val wakeup_alarm = activity?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(activity,MyAlarm::class.java)
         val pendingIntent = PendingIntent.getBroadcast(activity,1,intent,0)

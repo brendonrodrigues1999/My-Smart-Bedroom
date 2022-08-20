@@ -14,6 +14,8 @@ import com.example.mysmartbedroom.classes.Bedroom
 import com.example.mysmartbedroom.classes.GridViewModal
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.FirebaseFirestore
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -30,6 +32,7 @@ class DashboardFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
     private lateinit var auth: FirebaseAuth
+    private lateinit var fStore: FirebaseFirestore
     lateinit var iotGRV: GridView
     lateinit var iotList: List<GridViewModal>
 
@@ -50,7 +53,9 @@ class DashboardFragment : Fragment() {
         val tempView = view.findViewById<TextView>(R.id.temperatureView)
         val nightModeBtn = view.findViewById<Button>(R.id.nightModeBtn)
         auth = FirebaseAuth.getInstance()
+        fStore = FirebaseFirestore.getInstance()
         val ref = FirebaseDatabase.getInstance().getReference(auth.currentUser?.uid.toString())
+        val doc: DocumentReference = fStore.collection("Users").document(auth.currentUser?.uid.toString())
         var bedroom = Bedroom("","","",0.0,"","","","")
         iotGRV = view.findViewById(R.id.gridView)
         iotList = ArrayList<GridViewModal>()
@@ -196,7 +201,7 @@ class DashboardFragment : Fragment() {
             if(bedroom.Night_Mode =="on"){
                 ref.child("Night_Mode").setValue("off")
             }else if(bedroom.Night_Mode =="off"){
-                ref.child("Night_Mode").setValue("on")
+                setNightMode(ref,doc)
             }
         }
 
@@ -209,6 +214,32 @@ class DashboardFragment : Fragment() {
         }
 
         return view
+    }
+
+    private fun setNightMode(ref: DatabaseReference, doc: DocumentReference) {
+        ref.child("Night_Mode").setValue("on")
+        doc.collection("Bedroom Settings").document("NightModeSettings")
+            .get().addOnSuccessListener {
+            if(it.data?.get("Lights") =="enabled"){
+                ref.child("Lights").setValue("off")
+            }
+            if(it.data?.get("Curtains")=="enabled"){
+                ref.child("Curtains").setValue("close")
+            }
+//            if(it.data?.get("AC")=="enabled"){
+//                ref.child("Curtains").setValue("open")
+//            }
+//            if(it.data?.get("Heater")=="enabled"){
+//                ref.child("Curtains").setValue("open")
+//            }
+            if(it.data?.get("Door_Locks")=="enabled"){
+                ref.child("Door_Locks").setValue("locked")
+            }
+            if(it.data?.get("Music")=="enabled"){
+                ref.child("Music").setValue("on")
+            }
+//            AlarmSettingFragment.newInstance("","").setAlarm(12345)
+        }
     }
 
     companion object {

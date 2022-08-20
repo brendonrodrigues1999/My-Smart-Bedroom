@@ -39,18 +39,27 @@ class RegisterUserActivity : AppCompatActivity() {
                             val user = hashMapOf("FirstName" to f_name,"LastName" to s_name,"Email" to email, "MobileNo" to mobno, "Password" to password)
                             doc.set(user as Map<String, Any>).addOnCompleteListener(this) { task ->
                                 if (task.isSuccessful) {
-                                    val ref = FirebaseDatabase.getInstance().getReference(userId)
-                                    ref.child("Lights").setValue("off")
-                                    ref.child("Curtains").setValue("close")
-                                    ref.child("Temperature").setValue(0)
-                                    ref.child("Music").setValue("off")
-                                    ref.child("Door_Locks").setValue("locked")
-                                    ref.child("Heater").setValue("0")
-                                    ref.child("AC").setValue("0")
-                                    ref.child("Night_Mode").setValue("on")
-                                    Toast.makeText(this,"User Added!", Toast.LENGTH_SHORT).show()
-                                    startActivity(Intent(applicationContext, MainActivity::class.java))
-                                    finish()
+                                    val nightmode = hashMapOf("Lights" to "disabled" , "Curtains" to "disabled" ,
+                                        "Music" to "disabled" , "Door_Locks" to "disabled" , "Heater"  to "disabled" , "AC" to "disabled")
+                                    val doc2 = doc.collection("Bedroom Settings").document("NightModeSettings")
+                                    doc2.set(nightmode as Map<String,Any>).addOnCompleteListener(this) { task ->
+                                        if (task.isSuccessful) {
+                                            val ref = FirebaseDatabase.getInstance().getReference(userId)
+                                            ref.child("Lights").setValue("off")
+                                            ref.child("Curtains").setValue("close")
+                                            ref.child("Temperature").setValue(0)
+                                            ref.child("Music").setValue("off")
+                                            ref.child("Door_Locks").setValue("locked")
+                                            ref.child("Heater").setValue("0")
+                                            ref.child("AC").setValue("0")
+                                            ref.child("Night_Mode").setValue("off")
+                                            Toast.makeText(this,"User Added!", Toast.LENGTH_SHORT).show()
+                                            startActivity(Intent(applicationContext, MainActivity::class.java))
+                                            finish()
+                                        }else {
+                                            Toast.makeText(this,"Couldn't Add Info", Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
                                 } else {
                                     if (task.exception is FirebaseAuthInvalidCredentialsException) {
                                         Toast.makeText(this,"Couldn't Add Info", Toast.LENGTH_SHORT).show()
