@@ -1,10 +1,17 @@
 package com.example.mysmartbedroom
 
 import android.os.Bundle
+import android.text.Editable
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.FirebaseFirestore
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -20,6 +27,8 @@ class TemperatureControlFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    private lateinit var auth: FirebaseAuth
+    private lateinit var fStore: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,8 +42,22 @@ class TemperatureControlFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_temperature_control, container, false)
+        auth = FirebaseAuth.getInstance()
+        fStore = FirebaseFirestore.getInstance()
+        val view = inflater.inflate(R.layout.fragment_temperature_control, container, false)
+        val nightTempBtn = view.findViewById<Button>(R.id.nightTempBtn)
+        val tempInp = view.findViewById<EditText>(R.id.tempInp)
+        val doc: DocumentReference = fStore.collection("Users").document(auth.currentUser?.uid.toString())
+        val doc2 = doc.collection("Bedroom Settings").document("NightModeSettings")
+        nightTempBtn.setOnClickListener{
+            doc2.update(hashMapOf("NightTemp" to tempInp.text.toString().toInt()) as Map<String,Any>)
+            Toast.makeText(activity,"Temperature saved", Toast.LENGTH_SHORT).show()
+        }
+        doc2.get().addOnSuccessListener {
+            tempInp.setText(it.data?.get("NightTemp").toString())
+        }
+
+        return view
     }
 
     companion object {

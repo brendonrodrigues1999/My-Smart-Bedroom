@@ -236,12 +236,16 @@ class DashboardFragment : Fragment() {
             if(it.data?.get("Curtains")=="enabled"){
                 ref.child("Curtains").setValue("close")
             }
-//            if(it.data?.get("AC")=="enabled"){
-//                ref.child("Curtains").setValue("open")
-//            }
-//            if(it.data?.get("Heater")=="enabled"){
-//                ref.child("Curtains").setValue("open")
-//            }
+            if(it.data?.get("Temperature")=="enabled"){
+                val userNightTemp = it.data?.get("NightTemp").toString()
+                if((userNightTemp.toInt() >= 16) and (userNightTemp.toInt() <= 23)){
+                    ref.child("AC").setValue(userNightTemp)
+                    ref.child("Heater").setValue("off")
+                }else if((userNightTemp.toInt() >= 24) and (userNightTemp.toInt() <= 28)){
+                    ref.child("AC").setValue("off")
+                    ref.child("Heater").setValue(userNightTemp)
+                }
+            }
             if(it.data?.get("Door_Locks")=="enabled"){
                 ref.child("Door_Locks").setValue("locked")
             }

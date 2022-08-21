@@ -23,7 +23,7 @@
         <entry key="app/src/main/res/layout/fragment_music_control.xml" value="0.15520833333333334" />
         <entry key="app/src/main/res/layout/fragment_night_mode_settings.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_profile.xml" value="0.3098958333333333" />
-        <entry key="app/src/main/res/layout/fragment_temperature_control.xml" value="0.15520833333333334" />
+        <entry key="app/src/main/res/layout/fragment_temperature_control.xml" value="0.25" />
         <entry key="app/src/main/res/layout/gridview_item.xml" value="0.30885416666666665" />
         <entry key="app/src/main/res/layout/layout_navigation_header.xml" value="0.30885416666666665" />
         <entry key="app/src/main/res/menu/navigation_menu.xml" value="0.17395833333333333" />
