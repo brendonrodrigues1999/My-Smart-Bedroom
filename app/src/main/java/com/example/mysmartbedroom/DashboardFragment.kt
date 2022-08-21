@@ -1,6 +1,10 @@
 package com.example.mysmartbedroom
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -12,10 +16,15 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.get
 import com.example.mysmartbedroom.classes.Bedroom
 import com.example.mysmartbedroom.classes.GridViewModal
+import com.example.mysmartbedroom.classes.MyAlarm
+import com.example.mysmartbedroom.classes.OpenCurtains
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import java.util.*
+import kotlin.collections.ArrayList
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -217,6 +226,7 @@ class DashboardFragment : Fragment() {
     }
 
     private fun setNightMode(ref: DatabaseReference, doc: DocumentReference) {
+        val openCurtainsTime = 600000
         ref.child("Night_Mode").setValue("on")
         doc.collection("Bedroom Settings").document("NightModeSettings")
             .get().addOnSuccessListener {
@@ -238,8 +248,44 @@ class DashboardFragment : Fragment() {
             if(it.data?.get("Music")=="enabled"){
                 ref.child("Music").setValue("on")
             }
-//            AlarmSettingFragment.newInstance("","").setAlarm(12345)
+            setAlarm(getTime(it))
+            setOpenCurtainsAlarm(getTime(it)-openCurtainsTime)
         }
+    }
+
+    private fun getTime(it: DocumentSnapshot?): Long {
+            val calender: Calendar = Calendar.getInstance()
+        calender.set(
+            calender.get(Calendar.YEAR),
+            calender.get(Calendar.MONTH),
+            calender.get(Calendar.DAY_OF_MONTH),
+            it?.data?.get("AlarmHour").toString().toInt(),
+            it?.data?.get("AlarmMinute").toString().toInt(),
+            0
+        )
+        return calender.timeInMillis
+    }
+
+    fun setAlarm(timeInMillis: Long) {
+        val wakeup_alarm = activity?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(activity, MyAlarm::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(activity,1,intent,0)
+        wakeup_alarm.set(
+            AlarmManager.RTC_WAKEUP,
+            timeInMillis,
+            pendingIntent
+        )
+    }
+
+    private fun setOpenCurtainsAlarm(time: Long) {
+        val openCurtains = activity?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(activity, OpenCurtains::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(activity,0,intent,0)
+        openCurtains.set(
+            AlarmManager.RTC_WAKEUP,
+            time,
+            pendingIntent
+        )
     }
 
     companion object {

@@ -14,6 +14,6 @@ class OpenCurtains : BroadcastReceiver() {
         auth = FirebaseAuth.getInstance()
         val ref = FirebaseDatabase.getInstance().getReference(auth.currentUser?.uid.toString())
         ref.child("Curtains").setValue("open")
-        Toast.makeText(p0,"Alarm is Set",Toast.LENGTH_LONG).show()
+        ref.child("Night_Mode").setValue("off")
     }
 }
