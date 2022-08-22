@@ -50,8 +50,13 @@ class TemperatureControlFragment : Fragment() {
         val doc: DocumentReference = fStore.collection("Users").document(auth.currentUser?.uid.toString())
         val doc2 = doc.collection("Bedroom Settings").document("NightModeSettings")
         nightTempBtn.setOnClickListener{
-            doc2.update(hashMapOf("NightTemp" to tempInp.text.toString().toInt()) as Map<String,Any>)
-            Toast.makeText(activity,"Temperature saved", Toast.LENGTH_SHORT).show()
+            val temp = tempInp.text.toString().toInt()
+            if((temp >28) or (temp<16)){
+                Toast.makeText(activity,"Can't set to this temperature", Toast.LENGTH_SHORT).show()
+            }else{
+                doc2.update(hashMapOf("NightTemp" to temp) as Map<String,Any>)
+                Toast.makeText(activity,"Temperature saved", Toast.LENGTH_SHORT).show()
+            }
         }
         doc2.get().addOnSuccessListener {
             tempInp.setText(it.data?.get("NightTemp").toString())

@@ -65,13 +65,13 @@ class DashboardFragment : Fragment() {
         fStore = FirebaseFirestore.getInstance()
         val ref = FirebaseDatabase.getInstance().getReference(auth.currentUser?.uid.toString())
         val doc: DocumentReference = fStore.collection("Users").document(auth.currentUser?.uid.toString())
-        var bedroom = Bedroom("","","",0.0,"","","","")
+        var bedroom = Bedroom("","","",0.0,"","","")
         iotGRV = view.findViewById(R.id.gridView)
         iotList = ArrayList<GridViewModal>()
         iotList = iotList + GridViewModal("Lights",R.drawable.light_off)
         iotList = iotList + GridViewModal("Curtains",R.drawable.closed_curtains)
         iotList = iotList + GridViewModal("Music",R.drawable.music_on)
-        iotList = iotList + GridViewModal("Set Temperature",R.drawable.no_temp)
+        iotList = iotList + GridViewModal("Air Conditioner",R.drawable.ac_off)
         iotList = iotList + GridViewModal("Alarm",R.drawable.alarm)
         iotList = iotList + GridViewModal("Door Locks",R.drawable.door_unlocked)
 
@@ -99,10 +99,12 @@ class DashboardFragment : Fragment() {
                     }else{
                         ref.child("Music").setValue("on")
                     }
-                "Set Temperature" -> {
-                    view.findViewById<ConstraintLayout>(R.id.menuHome).removeAllViews()
-                    activity?.supportFragmentManager?.beginTransaction()
-                        ?.add(R.id.menuHome, tempFrag)?.disallowAddToBackStack()?.commit()
+                "Air Conditioner" -> {
+                    if(bedroom.AC == "off"){
+                        ref.child("AC").setValue("24") //TODO: remove hardcoded value
+                    }else{
+                        ref.child("AC").setValue("off")
+                    }
                 }
                 "Alarm" -> {
                     view.findViewById<ConstraintLayout>(R.id.menuHome).removeAllViews()
@@ -142,7 +144,7 @@ class DashboardFragment : Fragment() {
                         activity?.supportFragmentManager?.beginTransaction()
                             ?.add(R.id.menuHome, musicFreg)?.disallowAddToBackStack()?.commit()
                     }
-                    "Set Temperature" -> {
+                    "Air Conditioner" -> {
                         view.findViewById<ConstraintLayout>(R.id.menuHome).removeAllViews()
                         activity?.supportFragmentManager?.beginTransaction()
                             ?.add(R.id.menuHome, tempFrag)?.disallowAddToBackStack()?.commit()
@@ -187,12 +189,10 @@ class DashboardFragment : Fragment() {
                 }else if(bedroom.Door_Locks=="unlocked"){
                     iotGRV.get(5).findViewById<ImageView>(R.id.iotIcon).setImageResource(R.drawable.door_unlocked)
                 }
-                if(bedroom.Heater!="off"){
-                    iotGRV.get(3).findViewById<ImageView>(R.id.iotIcon).setImageResource(R.drawable.heater)
-                }else if(bedroom.AC!="off"){
-                    iotGRV.get(3).findViewById<ImageView>(R.id.iotIcon).setImageResource(R.drawable.air_conditioner)
+                if(bedroom.AC == "off"){
+                    iotGRV.get(3).findViewById<ImageView>(R.id.iotIcon).setImageResource(R.drawable.ac_off)
                 }else{
-                    iotGRV.get(3).findViewById<ImageView>(R.id.iotIcon).setImageResource(R.drawable.no_temp)
+                    iotGRV.get(3).findViewById<ImageView>(R.id.iotIcon).setImageResource(R.drawable.ac_on)
                 }
                 if(bedroom.Night_Mode =="on"){
                     nightModeBtn.text = "TURN OFF NIGHT MODE"
@@ -238,13 +238,7 @@ class DashboardFragment : Fragment() {
             }
             if(it.data?.get("Temperature")=="enabled"){
                 val userNightTemp = it.data?.get("NightTemp").toString()
-                if((userNightTemp.toInt() >= 16) and (userNightTemp.toInt() <= 23)){
-                    ref.child("AC").setValue(userNightTemp)
-                    ref.child("Heater").setValue("off")
-                }else if((userNightTemp.toInt() >= 24) and (userNightTemp.toInt() <= 28)){
-                    ref.child("AC").setValue("off")
-                    ref.child("Heater").setValue(userNightTemp)
-                }
+                ref.child("AC").setValue(userNightTemp)
             }
             if(it.data?.get("Door_Locks")=="enabled"){
                 ref.child("Door_Locks").setValue("locked")

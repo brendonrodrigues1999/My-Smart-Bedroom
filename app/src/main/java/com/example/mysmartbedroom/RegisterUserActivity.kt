@@ -40,7 +40,7 @@ class RegisterUserActivity : AppCompatActivity() {
                             doc.set(user as Map<String, Any>).addOnCompleteListener(this) { task ->
                                 if (task.isSuccessful) {
                                     val nightmode = hashMapOf("Lights" to "disabled" , "Curtains" to "disabled" ,
-                                        "Music" to "disabled" , "Door_Locks" to "disabled" , "Temperature" to "disabled", "AlarmHour" to 0, "AlarmMinute" to 0)
+                                        "Music" to "disabled" , "Door_Locks" to "disabled" , "Air Conditioner" to "disabled", "AlarmHour" to 0, "AlarmMinute" to 0)
                                     val doc2 = doc.collection("Bedroom Settings").document("NightModeSettings")
                                     doc2.set(nightmode as Map<String,Any>).addOnCompleteListener(this) { task ->
                                         if (task.isSuccessful) {
@@ -50,7 +50,6 @@ class RegisterUserActivity : AppCompatActivity() {
                                             ref.child("Temperature").setValue(0)
                                             ref.child("Music").setValue("off")
                                             ref.child("Door_Locks").setValue("locked")
-                                            ref.child("Heater").setValue("off")
                                             ref.child("AC").setValue("off")
                                             ref.child("Night_Mode").setValue("off")
                                             Toast.makeText(this,"User Added!", Toast.LENGTH_SHORT).show()

@@ -53,7 +53,7 @@ class NightModeSettingsFragment : Fragment() {
             if(it.data?.get("Lights") == "enabled"){
                 lightsToggle.toggle()
             }
-            if(it.data?.get("Temperature") == "enabled"){
+            if(it.data?.get("Air Conditioner") == "enabled"){
                 tempToggle.toggle()
             }
             if(it.data?.get("Curtains") == "enabled"){
@@ -80,19 +80,13 @@ class NightModeSettingsFragment : Fragment() {
             else doc2.update(hashMapOf("Music" to "disabled")as Map<String, Any>)
         }
         tempToggle.setOnCheckedChangeListener{_,isChecked ->
-            if(isChecked) doc2.update(hashMapOf("Temperature" to "enabled")as Map<String, Any>)
-            else doc2.update(hashMapOf("Temperature" to "disabled")as Map<String, Any>)
+            if(isChecked) doc2.update(hashMapOf("Air Conditioner" to "enabled")as Map<String, Any>)
+            else doc2.update(hashMapOf("Air Conditioner" to "disabled")as Map<String, Any>)
         }
         locksToggle.setOnCheckedChangeListener{_,isChecked ->
             if(isChecked) doc2.update(hashMapOf("Door_Locks" to "enabled")as Map<String, Any>)
             else doc2.update(hashMapOf("Door_Locks" to "disabled")as Map<String, Any>)
         }
-
-
-
-
-
-
         return view
     }
 
