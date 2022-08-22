@@ -47,8 +47,11 @@ class TemperatureControlFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_temperature_control, container, false)
         val nightTempBtn = view.findViewById<Button>(R.id.nightTempBtn)
         val tempInp = view.findViewById<EditText>(R.id.tempInp)
+        val airConBtn = view.findViewById<Button>(R.id.airConBtn)
+        val airConInp = view.findViewById<EditText>(R.id.airConInp)
         val doc: DocumentReference = fStore.collection("Users").document(auth.currentUser?.uid.toString())
         val doc2 = doc.collection("Bedroom Settings").document("NightModeSettings")
+        val doc3 = doc.collection("Bedroom Settings").document("AirConditionerSettings")
         nightTempBtn.setOnClickListener{
             val temp = tempInp.text.toString().toInt()
             if((temp >28) or (temp<16)){
@@ -58,8 +61,20 @@ class TemperatureControlFragment : Fragment() {
                 Toast.makeText(activity,"Temperature saved", Toast.LENGTH_SHORT).show()
             }
         }
+        airConBtn.setOnClickListener {
+            val temp = airConInp.text.toString().toInt()
+            if((temp >28) or (temp<16)){
+                Toast.makeText(activity,"Can't set to this temperature", Toast.LENGTH_SHORT).show()
+            }else{
+                doc3.update(hashMapOf("Temperature" to temp) as Map<String,Any>)
+                Toast.makeText(activity,"Temperature saved", Toast.LENGTH_SHORT).show()
+            }
+        }
         doc2.get().addOnSuccessListener {
             tempInp.setText(it.data?.get("NightTemp").toString())
+        }
+        doc3.get().addOnSuccessListener {
+            airConInp.setText(it.data?.get("Temperature").toString())
         }
 
         return view

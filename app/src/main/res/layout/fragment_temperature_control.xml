@@ -9,26 +9,12 @@
     tools:context=".TemperatureControlFragment">
 
 
-    <TextView
-        android:id="@+id/textView9"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="123dp"
-        android:layout_marginBottom="16dp"
-        android:text="Set Temperature for Nigth Mode"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/tempInp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <EditText
         android:id="@+id/tempInp"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="98dp"
-        android:layout_marginEnd="1dp"
-        android:layout_marginBottom="520dp"
+        android:layout_marginStart="108dp"
+        android:layout_marginBottom="246dp"
         android:ems="10"
         android:gravity="center"
         android:inputType="number"
@@ -38,12 +24,62 @@
         app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
     <Button
+        android:id="@+id/airConBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="107dp"
+        android:text="Save"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/airConInp"
+        app:layout_constraintTop_toTopOf="@+id/airConInp" />
+
+    <TextView
+        android:id="@+id/textView15"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="191dp"
+        android:layout_marginBottom="23dp"
+        android:text="Set Air Conditioner  Temperature"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/airConInp"
+        app:layout_constraintEnd_toStartOf="@+id/airConBtn"
+        app:layout_constraintStart_toStartOf="@+id/airConBtn"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/airConInp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="108dp"
+        android:layout_marginBottom="86dp"
+        android:ems="10"
+        android:gravity="center"
+        android:inputType="number"
+        app:layout_constraintBottom_toTopOf="@+id/textView9"
+        app:layout_constraintEnd_toStartOf="@+id/airConBtn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView15" />
+
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="33dp"
+        android:text="Set Temperature for Nigth Mode"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/tempInp"
+        app:layout_constraintEnd_toStartOf="@+id/nightTempBtn"
+        app:layout_constraintStart_toStartOf="@+id/nightTempBtn"
+        app:layout_constraintTop_toBottomOf="@+id/airConInp" />
+
+    <Button
         android:id="@+id/nightTempBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="116dp"
+        android:layout_marginEnd="107dp"
         android:text="Save"
-        app:layout_constraintBottom_toBottomOf="@+id/tempInp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/tempInp" />
+        app:layout_constraintStart_toEndOf="@+id/tempInp"
+        app:layout_constraintTop_toTopOf="@+id/tempInp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

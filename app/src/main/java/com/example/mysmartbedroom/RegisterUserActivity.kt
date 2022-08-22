@@ -39,11 +39,14 @@ class RegisterUserActivity : AppCompatActivity() {
                             val user = hashMapOf("FirstName" to f_name,"LastName" to s_name,"Email" to email, "MobileNo" to mobno, "Password" to password)
                             doc.set(user as Map<String, Any>).addOnCompleteListener(this) { task ->
                                 if (task.isSuccessful) {
-                                    val nightmode = hashMapOf("Lights" to "disabled" , "Curtains" to "disabled" ,
+                                    val nightmode = hashMapOf("Lights" to "disabled" , "Curtains" to "disabled" , "NightTemp" to 20,
                                         "Music" to "disabled" , "Door_Locks" to "disabled" , "Air Conditioner" to "disabled", "AlarmHour" to 0, "AlarmMinute" to 0)
+                                    val airConditionerSettings = hashMapOf("Temperature" to 20)
                                     val doc2 = doc.collection("Bedroom Settings").document("NightModeSettings")
+                                    val doc3 = doc.collection("Bedroom Settings").document("AirConditionerSettings")
                                     doc2.set(nightmode as Map<String,Any>).addOnCompleteListener(this) { task ->
                                         if (task.isSuccessful) {
+                                            doc3.set(airConditionerSettings as Map<String,Any>)
                                             val ref = FirebaseDatabase.getInstance().getReference(userId)
                                             ref.child("Lights").setValue("off")
                                             ref.child("Curtains").setValue("close")

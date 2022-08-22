@@ -101,7 +101,11 @@ class DashboardFragment : Fragment() {
                     }
                 "Air Conditioner" -> {
                     if(bedroom.AC == "off"){
-                        ref.child("AC").setValue("24") //TODO: remove hardcoded value
+                        val doc2 = doc.collection("Bedroom Settings").document("AirConditionerSettings")
+                        doc2.get().addOnSuccessListener {
+                            val temp = it.data?.get("Temperature").toString()
+                            ref.child("AC").setValue(temp)
+                        }
                     }else{
                         ref.child("AC").setValue("off")
                     }
@@ -236,7 +240,7 @@ class DashboardFragment : Fragment() {
             if(it.data?.get("Curtains")=="enabled"){
                 ref.child("Curtains").setValue("close")
             }
-            if(it.data?.get("Temperature")=="enabled"){
+            if(it.data?.get("Air Conditioner")=="enabled"){
                 val userNightTemp = it.data?.get("NightTemp").toString()
                 ref.child("AC").setValue(userNightTemp)
             }
