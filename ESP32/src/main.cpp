@@ -17,7 +17,7 @@ void connectToWiFi();
 //Firebase
 #define API_KEY "AIzaSyC9-biCGCuqMgNltBmNerrhejd1paGbU6g"
 #define DATABASE_URL "https://mysmartbedroom-default-rtdb.firebaseio.com" 
-#define USER_EMAIL "berodrigues1@sheffield.ac.uk"
+#define USER_EMAIL "i@b.com"
 #define USER_PASSWORD "123456"
 void connectToFirebase();
 
@@ -29,7 +29,8 @@ String uid;
 
 Led bedroom_lights(17);
 Button button(21);
-PIR pir(16);
+PIR pir(0);
+PIR nightMotionPIR(16);
 DHT dht(18, DHTTYPE);
 Timer nightLightTimer(10000);
 Timer DTHTimer(4000);
@@ -41,12 +42,61 @@ void setup(){
   bedroom_lights.begin();
   button.begin();
   pir.begin();
+  nightMotionPIR.begin();
   dht.begin();
   DTHTimer.begin();
 }
 
-void loop(){
-  if(Firebase.RTDB.getString(&fbdo,uid + "/bedroom lights"))
+
+// int i;
+bool deepSleep = false;
+int sleepMotionCounter = 0;
+long sleepMotionTime=0;
+String acTemp;
+void loop()
+{
+  if(Firebase.RTDB.getString(&fbdo, uid + "/Night_Mode")){
+    if(fbdo.stringData() == "on" and sleepMotionTime==0){
+      sleepMotionTime = millis();
+      Serial.println("sdc");
+      Firebase.RTDB.getString(&fbdo, uid + "/AC");
+      acTemp = fbdo.stringData();
+    }
+  }
+  if(Firebase.RTDB.getString(&fbdo, uid + "/Night_Mode")){
+    if(fbdo.stringData() == "off" and sleepMotionTime!=0){
+      sleepMotionTime = 0;
+      deepSleep = false;
+      Serial.println("sdcccc");
+    }
+  }
+
+
+  if(nightMotionPIR.motion()){
+    Firebase.RTDB.getString(&fbdo, uid + "/Night_Mode");
+    if(!deepSleep and fbdo.stringData() == "on") {
+      if(millis()-sleepMotionTime > 20000){
+        deepSleep = true;
+        Firebase.RTDB.setString(&fbdo, uid + "/AC", "off");
+      }
+    }else if(deepSleep){
+      if(millis() - sleepMotionTime < 20000){
+        sleepMotionCounter++;
+      }else{
+        sleepMotionCounter = 0;
+      }
+    }
+    sleepMotionTime = millis();
+  }
+
+  if(sleepMotionCounter>10){
+    deepSleep = false;
+    Firebase.RTDB.setString(&fbdo, uid + "/AC", acTemp);
+    sleepMotionCounter = 0;
+    sleepMotionTime = millis();
+  }
+
+  if(Firebase.RTDB.getString(&fbdo,uid + "/Lights"))
   {
     if(fbdo.stringData()=="on"){
       bedroom_lights.on();
@@ -60,12 +110,12 @@ void loop(){
     if (bedroom_lights.status())
     {
       bedroom_lights.off();
-      Firebase.RTDB.setString(&fbdo, uid + "/bedroom lights", "off");
+      Firebase.RTDB.setString(&fbdo, uid + "/Lights", "off");
     }
-    else
+    else 
     {
       bedroom_lights.on();
-      Firebase.RTDB.setString(&fbdo, uid + "/bedroom lights", "on");
+      Firebase.RTDB.setString(&fbdo, uid + "/Lights", "on");
     }
   }
 
@@ -98,7 +148,7 @@ void loop(){
       // return;
     }
     Serial.println("DHT sensor!");
-    Firebase.RTDB.setFloat(&fbdo, uid+"/room temperature", t);
+    Firebase.RTDB.setFloat(&fbdo, uid+"/Temperature", int(t));
     DTHTimer.begin();
   }
 }
