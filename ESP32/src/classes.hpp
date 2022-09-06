@@ -42,15 +42,28 @@ class PIR {
         int _pin;
         bool _status;
 };
-
-class Timer {
+class Motor {
     public:
-        Timer(int seconds);
+        Motor(int speed);
         void begin();
-        bool running();
-        void stop();
+        bool state();
+        void open();
+        void close();
     private:
-        int _seconds;
-        long delayStart;    // start delay
-        bool delayRunning; // not finished yet
+        int _speed;
+        bool _status;
+};
+
+class Timer
+{
+public:
+    Timer(int seconds);
+    void begin();
+    bool running();
+    void stop();
+
+private:
+    int _seconds;
+    long delayStart;   // start delay
+    bool delayRunning; // not finished yet
 };
