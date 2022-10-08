@@ -7,7 +7,18 @@
 #include <Firebase_ESP_Client.h> 
 #include "addons/TokenHelper.h" //Provide the token generation process info.
 #include "addons/RTDBHelper.h" //Provide the RTDB payload printing info and other helper functions.
- 
+#define FIREBASE_USE_PSRAM
+#include <fstream>
+#include <iostream>  
+#include<sstream> 
+#include<string>  
+using namespace std;  
+#if CONFIG_SPIRAM_ALLOW_BSS_SEG_EXTERNAL_MEMORY
+  #define EXT_RAM_ATTR _SECTION_ATTR_IMPL(".ext_ram.bss",__COUNTER__)
+#else
+  #define EXT_RAM_ATTR
+#endif
+
 //WiFi SSID and password
 char ssid[] = "MAFAir";             // your network SSID (name)
 char pass[] = "1357913579";    // your network password (use for WPA, or use as key for WEP)
@@ -26,143 +37,153 @@ FirebaseConfig config;
 // Variable to save USER UID
 String uid;
  
-Led bedroom_lights(17);
-Button button(21);
-PIR pir(0);
-PIR nightMotionPIR(16);
-DHT dht(18, DHTTYPE);
+Led bedroom_light(21);
+Led AC(16);
+Led night_light(19);
+Led door_locks(17);
+Led music(18);
+Button button(10);
+PIR night_pir(12);
+PIR bedMotionPIR(13);
+DHT dht(26, DHTTYPE);
 Timer nightLightTimer(10000);
 Timer DTHTimer(4000);
-Motor curtains(225);
+Motor curtains(50);
 
 void setup(){
  Serial.begin(921600);
  connectToWiFi();
  connectToFirebase();
 
- bedroom_lights.begin();
+ night_light.begin();
+ AC.begin();
+ bedroom_light.begin();
  button.begin();
- pir.begin();
- nightMotionPIR.begin();
+ night_pir.begin();
+ bedMotionPIR.begin();
  dht.begin();
  DTHTimer.begin();
  curtains.begin();
+ door_locks.begin();
+ music.begin();
 }
 
 bool deepSleep = false;
 int sleepMotionCounter = 0;
 long sleepMotionTime=0;
+float room_temp;
 String acTemp;
 void loop()
 {
- if(Firebase.RTDB.getString(&fbdo,uid + "/Lights"))
- {
-   if(fbdo.stringData()=="on"){
-     bedroom_lights.on();
-   }else if (fbdo.stringData()=="off"){
-     bedroom_lights.off();
-   }
+  if (Firebase.RTDB.getString(&fbdo, uid+"/Lights"))
+  {
+     if(fbdo.stringData()=="on"){
+       bedroom_light.on();
+     }else if (fbdo.stringData()=="off"){
+       bedroom_light.off();
+     }
  }
- 
- 
+
+//  if (Firebase.RTDB.getString(&fbdo, uid+"/Music"))
+//   {
+//      if(fbdo.stringData()=="on"){
+//        music.on();
+//      }
+//      else if (fbdo.stringData() == "off")
+//      {
+//       music.off();
+//      }
+//  }
+ if (Firebase.RTDB.getString(&fbdo, uid+"/Door_Locks"))
+  {
+     if(fbdo.stringData()=="locked"){
+       door_locks.on();
+       music.on();
+     }
+     else if (fbdo.stringData() == "unlocked")
+     {
+       door_locks.off();
+       music.off();
+     }
+ }
+ if (Firebase.RTDB.getString(&fbdo, uid+"/AC"))
+  {
+     if(fbdo.stringData()!="off"){
+       AC.on();
+     }
+     else if (fbdo.stringData() == "off")
+     {
+      AC.off();
+     }
+ }
+
+ String roomTemp;
+
  if(Firebase.RTDB.getString(&fbdo, uid + "/Curtains")){
   if(fbdo.stringData() == "close" and curtains.state() == true ){
     curtains.close();
-    Serial.println("curtains closed");
   }else if(fbdo.stringData() == "open" and curtains.state() == false ){
     curtains.open();
-    Serial.println("curtains opened");
   }
  }
     
  if(Firebase.RTDB.getString(&fbdo, uid + "/Night_Mode")){
    if(fbdo.stringData() == "on" and sleepMotionTime==0){
      sleepMotionTime = millis();
-     Serial.println("sdc");
      Firebase.RTDB.getString(&fbdo, uid + "/AC");
      acTemp = fbdo.stringData();
    }
  }
  if(Firebase.RTDB.getString(&fbdo, uid + "/Night_Mode")){
-   if(fbdo.stringData() == "off" and sleepMotionTime!=0){
+   if(fbdo.stringData() == "off" and sleepMotionTime!=0){ //nightmode turned off
      sleepMotionTime = 0;
      deepSleep = false;
-     Serial.println("sdcccc");
    }
  }
- 
- 
- if(nightMotionPIR.motion()){
+ if(bedMotionPIR.motion()){ // if motion detected
    Firebase.RTDB.getString(&fbdo, uid + "/Night_Mode");
    if(!deepSleep and fbdo.stringData() == "on") {
-     if(millis()-sleepMotionTime > 20000){
+     if(millis()-sleepMotionTime > 6000000){ //wait time
        deepSleep = true;
        Firebase.RTDB.setString(&fbdo, uid + "/AC", "off");
      }
    }else if(deepSleep){
-     if(millis() - sleepMotionTime < 20000){
+     if(millis() - sleepMotionTime < 300000){ //motion timer
        sleepMotionCounter++;
-       Serial.println("loop2");
      }else{
        sleepMotionCounter = 0;
      }
    }
    sleepMotionTime = millis();
  }
- 
- if(sleepMotionCounter>10){
+ if(sleepMotionCounter>10 and roomTemp != acTemp){ //user restless/awake
    deepSleep = false;
-   Serial.println("loop4");
    Firebase.RTDB.setString(&fbdo, uid + "/AC", acTemp);
    sleepMotionCounter = 0;
    sleepMotionTime = millis();
  }
- 
- 
- // if (button.clicked())
- // {
- //   if (bedroom_lights.status())
- //   {
- //     bedroom_lights.off();
- //     Firebase.RTDB.setString(&fbdo, uid + "/Lights", "off");
- //   }
- //   else
- //   {
- //     bedroom_lights.on();
- //     Firebase.RTDB.setString(&fbdo, uid + "/Lights", "on");
- //   }
- // }
- 
- if(pir.motion()){
-   if(bedroom_lights.status())
-     {
-       bedroom_lights.off();
-     } else
-     {
-       bedroom_lights.on();
-       nightLightTimer.begin();
-     }
+
+ if(night_pir.motion()){
+    if(!bedroom_light.status()){
+      night_light.on();
+      nightLightTimer.begin();
+    }
  }
  
- if(nightLightTimer.running()){
-   bedroom_lights.off();
+ if(nightLightTimer.timedout()){
+    night_light.off();
    nightLightTimer.stop();
  }
  
- if(DTHTimer.running()){
-   // Read the humidity in %:
-   float h = dht.readHumidity();
-   // Read the temperature as Celsius:
-   float t = dht.readTemperature();
-   // Read the temperature as Fahrenheit:
-   float f = dht.readTemperature(true);
+ if(DTHTimer.timedout()){
+  // Read the temperature as Celcius:
+   room_temp = dht.readTemperature();
    // Check if any reads failed and exit early (to try again):
-   if (isnan(h) || isnan(t) || isnan(f)) {
+   if (isnan(room_temp)) {
      Serial.println("Failed to read from DHT sensor!");
      // return;
    }
-   Serial.println("DHT sensor!");
-   Firebase.RTDB.setFloat(&fbdo, uid+"/Temperature", int(t));
+   Firebase.RTDB.setFloat(&fbdo, uid+"/Temperature", int(room_temp));
    DTHTimer.begin();
  }
 }
@@ -180,22 +201,19 @@ void connectToWiFi(){
 void connectToFirebase() {
  /* Assign the api key (required) */
  config.api_key = API_KEY;
- 
  /* Assign the RTDB URL (required) */
  config.database_url = DATABASE_URL;
  // Insert Authorized Email and Corresponding Password
  Firebase.reconnectWiFi(true);
- 
  // Assign the user sign in credentials
  auth.user.email = USER_EMAIL;
  auth.user.password = USER_PASSWORD;
- 
  /* Assign the callback function for the long running token generation task */
  config.token_status_callback = tokenStatusCallback; //see addons/TokenHelper.h
  // Assign the maximum retry of token generation
  config.max_token_generation_retry = 5;
   Firebase.begin(&config, &auth);
- 
+  fbdo.setResponseSize(15000); 
  // Getting the user UID might take a few seconds
  while ((auth.token.uid) == "") {
    Serial.print('.');

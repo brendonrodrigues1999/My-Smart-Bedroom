@@ -10,7 +10,7 @@ void Timer::begin(){
     delayRunning = true; // not finished yet
 }
 
-bool Timer::running(){
+bool Timer::timedout(){
     if (delayRunning && ((millis() - delayStart) >= _seconds)) {
         return true;
     }

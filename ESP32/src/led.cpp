@@ -13,12 +13,12 @@ void Led::begin(){
 }
 
 void Led::on(){
-    digitalWrite(17, HIGH);
+    digitalWrite(_pin, HIGH);
     _status = true;
 }
 
 void Led::off(){
-    digitalWrite(17, LOW);
+    digitalWrite(_pin, LOW);
     _status = false;
 }
 

@@ -59,7 +59,7 @@ class Timer
 public:
     Timer(int seconds);
     void begin();
-    bool running();
+    bool timedout();
     void stop();
 
 private:

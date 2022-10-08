@@ -24,7 +24,7 @@ void Motor::begin(){
 void Motor::open(){
     int i;
 myMotor->run(BACKWARD);
-    for (i=0; i<1000; i++) {
+    for (i=0; i<1150; i++) {
       myMotor->setSpeed(_speed);
       delay(3);
   }
@@ -38,7 +38,7 @@ myMotor->run(BACKWARD);
 void Motor::close(){
     int i;
     myMotor->run(FORWARD);
-     for (i=0; i<1000; i++) {
+     for (i=0; i<1150; i++) {
        myMotor->setSpeed(_speed);
        delay(3);
      }
