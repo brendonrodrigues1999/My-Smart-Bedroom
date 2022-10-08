@@ -230,7 +230,7 @@ class DashboardFragment : Fragment() {
     }
 
     private fun setNightMode(ref: DatabaseReference, doc: DocumentReference) {
-        val openCurtainsTime = 600000
+        val openCurtainsTime = 12000000
         ref.child("Night_Mode").setValue("on")
         doc.collection("Bedroom Settings").document("NightModeSettings")
             .get().addOnSuccessListener {
@@ -250,8 +250,8 @@ class DashboardFragment : Fragment() {
             if(it.data?.get("Music")=="enabled"){
                 ref.child("Music").setValue("on")
             }
-            setAlarm(getTime(it))
-            setOpenCurtainsAlarm(getTime(it)-openCurtainsTime)
+            setAlarm(getTime(it)) //set alarm based on time set by user
+            setOpenCurtainsAlarm(getTime(it)-openCurtainsTime) //set curtain to open 20 mins before wakeup alarm
         }
     }
 
